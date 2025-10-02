@@ -62,6 +62,6 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: true
-        tags: mouhamadou98/fastapi:{{ github.sha }}
-        context: .
-        file: ./Dockerfile
+        tags: mouhamadou98/fastapi:${{ github.sha }}
+        context: "."
+        file: "Dockerfile"
