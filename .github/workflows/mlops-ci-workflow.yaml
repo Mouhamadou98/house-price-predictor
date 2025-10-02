@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:             
-  e2e_mlops_workflow:
+  e2e_ci_mlops_workflow:
     runs-on: ubuntu-latest
 
     steps:
