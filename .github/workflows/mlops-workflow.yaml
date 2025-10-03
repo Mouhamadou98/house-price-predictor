@@ -117,7 +117,7 @@ jobs:
     runs-on: ubuntu-latest #Utiliser une machine virtuelle Ubuntu différente de celle des jobs précédents
     steps:
     - name: Checkout code
-    uses: actions/checkout@v5 
+      uses: actions/checkout@v5 
     # -------------------------------- Étape spécifique au job --------------------------------
     # Nous devons télécharger les artefacts générés par le job précédent
     - name: Download trained model
