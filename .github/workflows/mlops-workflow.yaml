@@ -100,10 +100,13 @@ jobs:
       path: models/
     # -------------------------------- Nettoyer le serveur MLflow après l'entraînement --------------------------------
     - name: Clean up MLflow
+      # Arrêter le conteneur MLflow s'il est en cours d'exécution et true pour éviter les erreurs si le conteneur n'existe pas
+      # Supprimer le conteneur MLflow et true pour éviter les erreurs si le conteneur n'existe pas et true pour éviter les erreurs si le conteneur n'existe pas
       run: |
-      docker stop mlflow-server || true # Arrêter le conteneur MLflow s'il est en cours d'exécution et true pour éviter les erreurs si le conteneur n'existe pas
-      docker rm mlflow-server || true # Supprimer le conteneur MLflow et true pour éviter les erreurs si le conteneur n'existe pas et true pour éviter les erreurs si le conteneur n'existe pas
-      docker rmi ghrc.io/mlflow/mlflow:latest || true # Supprimer l'image Docker de MLflow et true pour éviter les erreurs si l'image n'existe pas
+      docker stop mlflow-server || true 
+      docker rm mlflow-server || true 
+      docker rmi ghrc.io/mlflow/mlflow:latest || true 
+    # Supprimer l'image Docker de MLflow et true pour éviter les erreurs si l'image n'existe pas
     # -------------------------------- Fin des étapes spécifiques au model training --------------------------------
   # -------------------------------- Fin de l'étape spécifique au job --------------------------------
     
@@ -141,7 +144,7 @@ jobs:
       push: true
       tags: docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
     # -------------------------------- Fin des étapes spécifiques au build et push des images Docker --------------------------------
-    
+
     # -------------------------------- Étape de nettoyage --------------------------------
     # - name: Cleanup Docker images
     #   run: |
