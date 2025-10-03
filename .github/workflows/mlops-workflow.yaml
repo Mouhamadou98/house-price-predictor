@@ -1,0 +1,156 @@
+name: MLOps Pipeline With tree stages
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  # -------------------------------- Stage 1: Data Processing --------------------------------
+  data-processing:
+
+    # -------------------------------- Ce bloc sera réutilisé pour les autre jobs --------------------------------
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5  #CLoner le repo
+
+    - name: Set up Python
+      uses: actions/setup-python@v6 #Installer python
+      with:
+        python-version: '3.11.13' #Version de python requise pour ce projet
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt 
+
+    # -------------------------------- Fin du bloc réutilisable --------------------------------
+    # -------------------------------- Étape spécifique au job --------------------------------
+    - name: Process data #Nom de l'étape
+      run: |
+        python src/data/run_processing.py --input data/raw/house_data.csv --output data/processed/cleaned_house_data.csv #Executer le script de traitement des données
+
+    - name: Engineer features #Nom de l'étape
+      run: |
+        python src/features/engineer.py --input data/processed/cleaned_house_data.csv --output data/processed/featured_house_data.csv --preprocessor models/trained/preprocessor.pkl #Executer le script de feature engineering
+
+    # -------------------------------- Fin de l'étape spécifique au job --------------------------------
+    
+    # -------------------------------- Après avoir effectuer les étapes du data processing et du feature engineering nous alors uploader les artefacts--------------------------------
+    
+    # -------------------------------- Upload Artifacts --------------------------------
+    - name: Upload processed data
+      uses: actions/upload-artifact@v4
+      with: 
+        name: processed-data
+        path: data/processed/featured_house_data.csv
+
+    - name: Upload preprocessor
+      uses: actions/upload-artifact@v4
+      with: 
+        name: preprocessor
+        path: models/trained/preprocessor.pkl
+
+  # -------------------------------- Stage 2: Model Training --------------------------------
+  model-training:
+    needs: data-processing # Ce job dépend du job data-processing
+    runs-on: ubuntu-latest #Utiliser une machine virtuelle Ubuntu différente de celle du job précédent
+    # -------------------------------- Réutilisation du bloc --------------------------------
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11.13'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    # -------------------------------- Fin de la réutilisation du bloc --------------------------------
+    # -------------------------------- Étape spécifique au job --------------------------------
+    # Nous devons télécharger les artefacts générés par le job précédent
+    - name: Download processed data
+      uses: actions/download-artifact@v4
+      with: 
+        name: processed-data
+        path: data/processed/featured_house_data.csv
+    # -------------------------------- Fin de l'étape spécifique au job --------------------------------
+    # -------------------------------- Étapes spécifiques au model training -------------------------------- 
+    # Nous allons configurer et démarrer un serveur MLflow pour le suivi des expériences
+    - name: Setup MLflow
+      run: |
+        docker pull ghrc.io/mlflow/mlflow:latest # Télécharger l'image Docker de MLflow
+        docker run -d -p 5000:5000 --name mlflow-server ghrc.io/mlflow/mlflow:latest mlflow serve --host 0.0.0.0 --backend-store-uri sqlite:///mlflow.db # Démarrer un conteneur MLflow
+    # -------------------------------- Attendre que le serveur MLflow soit prêt --------------------------------
+    - name: Wait for MLflow to be ready
+      run: |
+        sleep 10; # Attendre 10 secondes pour s'assurer que le serveur MLflow est prêt
+    # -------------------------------- Entraîner le modèle en utilisant les données traitées et le serveur MLflow --------------------------------
+    - name: Train model
+      run: |
+        mkdir -p models # Créer le répertoire models s'il n'existe pas
+        python src/models/train_model.py --config configs/model_config.yaml --data data/processed/featured_house_data.csv --models-dir models --mlflow-tracking-uri http://localhost:5000
+    # -------------------------------- Uploader le modèle entraîné et les artefacts associés --------------------------------
+    - name: Upload trained model
+      run: |
+      uses: actions/upload-artifact@v4
+      path: models/
+    # -------------------------------- Nettoyer le serveur MLflow après l'entraînement --------------------------------
+    - name: Clean up MLflow
+      run: |
+      docker stop mlflow-server || true # Arrêter le conteneur MLflow s'il est en cours d'exécution et true pour éviter les erreurs si le conteneur n'existe pas
+      docker rm mlflow-server || true # Supprimer le conteneur MLflow et true pour éviter les erreurs si le conteneur n'existe pas et true pour éviter les erreurs si le conteneur n'existe pas
+      docker rmi ghrc.io/mlflow/mlflow:latest || true # Supprimer l'image Docker de MLflow et true pour éviter les erreurs si l'image n'existe pas
+    # -------------------------------- Fin des étapes spécifiques au model training --------------------------------
+  # -------------------------------- Fin de l'étape spécifique au job --------------------------------
+    
+  # -------------------------------- Stage 3: Docker Image Build and Push --------------------------------
+  build-and-push:
+    needs: model-training # Ce job dépend du job model-training
+    runs-on: ubuntu-latest #Utiliser une machine virtuelle Ubuntu différente de celle des jobs précédents
+    # -------------------------------- Étape spécifique au job --------------------------------
+    # Nous devons télécharger les artefacts générés par le job précédent
+    - name: Download trained model
+      uses: actions/download-artifact@v4
+      with: 
+        name: model # Nom de l'artefact à télécharger
+        path: models/ # Chemin où l'artefact sera stocké
+    - name: Download preprocessor
+      uses: actions/download-artifact@v4
+      with:  
+        name: preprocessor
+        path: models/trained/
+    # -------------------------------- Fin de l'étape spécifique au job --------------------------------
+    # -------------------------------- Étapes spécifiques au build et push des images Docker --------------------------------
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }} # Utiliser une variable d'environnement pour le nom d'utilisateur Docker Hub
+        password: ${{ secrets.DOCKERHUB_TOKEN }} # Utiliser un secret GitHub pour le token Docker Hub
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3 # Configurer Docker Buildx pour la construction d'images multi-plateformes
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v6 # Construire et pousser les images Dockerx&x  
+      with:
+      context: .
+      file: ./Dockerfile
+      push: true
+      tags: docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
+    # -------------------------------- Fin des étapes spécifiques au build et push des images Docker --------------------------------
+    
+    # -------------------------------- Étape de nettoyage --------------------------------
+    # - name: Cleanup Docker images
+    #   run: |
+    #     docker rmi mouhamadou98/fastapi:dev
+    #     docker rmi mouhamadou98/streamlit:dev
+    #     docker system prune -f # Nettoyer les ressources Docker inutilisées
+    # -------------------------------- Fin de l'étape de nettoyage --------------------------------
+
+
+
+
+    
