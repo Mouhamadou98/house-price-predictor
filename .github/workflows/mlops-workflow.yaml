@@ -76,7 +76,7 @@ jobs:
       uses: actions/download-artifact@v4
       with: 
         name: processed-data
-        path: data/processed/featured_house_data.csv
+        path: data/processed/
     # -------------------------------- Fin de l'étape spécifique au job --------------------------------
     # -------------------------------- Étapes spécifiques au model training -------------------------------- 
     # Nous allons configurer et démarrer un serveur MLflow pour le suivi des expériences
