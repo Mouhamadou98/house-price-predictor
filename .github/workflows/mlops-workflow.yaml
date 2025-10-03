@@ -121,7 +121,7 @@ jobs:
     - name: Download trained model
       uses: actions/download-artifact@v4
       with: 
-        name: model # Nom de l'artefact à télécharger
+        name: trained-model # Nom de l'artefact à télécharger
         path: models/ # Chemin où l'artefact sera stocké
     - name: Download preprocessor
       uses: actions/download-artifact@v4
