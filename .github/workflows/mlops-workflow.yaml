@@ -95,17 +95,18 @@ jobs:
         python src/models/train_model.py --config configs/model_config.yaml --data data/processed/featured_house_data.csv --models-dir models --mlflow-tracking-uri http://localhost:5000
     # -------------------------------- Uploader le modèle entraîné et les artefacts associés --------------------------------
     - name: Upload trained model
-      run: |
       uses: actions/upload-artifact@v4
-      path: models/
+      with:
+        name: trained-model
+        path: models/
     # -------------------------------- Nettoyer le serveur MLflow après l'entraînement --------------------------------
     - name: Clean up MLflow
       # Arrêter le conteneur MLflow s'il est en cours d'exécution et true pour éviter les erreurs si le conteneur n'existe pas
       # Supprimer le conteneur MLflow et true pour éviter les erreurs si le conteneur n'existe pas et true pour éviter les erreurs si le conteneur n'existe pas
       run: |
-      docker stop mlflow-server || true 
-      docker rm mlflow-server || true 
-      docker rmi ghrc.io/mlflow/mlflow:latest || true 
+        docker stop mlflow-server || true 
+        docker rm mlflow-server || true 
+        docker rmi ghrc.io/mlflow/mlflow:latest || true 
     # Supprimer l'image Docker de MLflow et true pour éviter les erreurs si l'image n'existe pas
     # -------------------------------- Fin des étapes spécifiques au model training --------------------------------
   # -------------------------------- Fin de l'étape spécifique au job --------------------------------
