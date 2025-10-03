@@ -115,6 +115,7 @@ jobs:
   build-and-publish:
     needs: model-training # Ce job dépend du job model-training
     runs-on: ubuntu-latest #Utiliser une machine virtuelle Ubuntu différente de celle des jobs précédents
+    steps:
     # -------------------------------- Étape spécifique au job --------------------------------
     # Nous devons télécharger les artefacts générés par le job précédent
     - name: Download trained model
