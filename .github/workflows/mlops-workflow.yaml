@@ -80,10 +80,12 @@ jobs:
     # -------------------------------- Fin de l'étape spécifique au job --------------------------------
     # -------------------------------- Étapes spécifiques au model training -------------------------------- 
     # Nous allons configurer et démarrer un serveur MLflow pour le suivi des expériences
-    - name: Setup MLflow
+    - name: Set up MLflow
       run: |
-        docker pull ghrc.io/mlflow/mlflow:latest # Télécharger l'image Docker de MLflow
-        docker run -d -p 5000:5000 --name mlflow-server ghrc.io/mlflow/mlflow:latest mlflow serve --host 0.0.0.0 --backend-store-uri sqlite:///mlflow.db # Démarrer un conteneur MLflow
+      docker pull ghcr.io/mlflow/mlflow:latest
+      docker run -d -p 5000:5000 --name mlflow-server ghcr.io/mlflow/mlflow:latest mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///mlflow.db
+
+ - name: Wait for MLflow to start
     # -------------------------------- Attendre que le serveur MLflow soit prêt --------------------------------
     - name: Wait for MLflow to be ready
       run: |
