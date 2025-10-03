@@ -141,8 +141,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
-        file: ./Dockerfile
+        context: "."
+        file: ././Dockerfile
         push: true
         tags: ${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
     # -------------------------------- Fin des étapes spécifiques au build et push des images Docker --------------------------------
