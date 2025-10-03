@@ -143,8 +143,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v6 # Construire et pousser les images Dockerx&x  
       with:
-        context: .
-        file: ./Dockerfile
+        context: "." # Contexte de construction (répertoire racine du projet)
+        file: "Dockerfile" # Fichier Dockerfile à utiliser pour la construction
         push: true
         tags: docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
     # -------------------------------- Fin des étapes spécifiques au build et push des images Docker --------------------------------
