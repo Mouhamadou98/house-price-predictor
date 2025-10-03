@@ -112,7 +112,7 @@ jobs:
   # -------------------------------- Fin de l'étape spécifique au job --------------------------------
     
   # -------------------------------- Stage 3: Docker Image Build and Push --------------------------------
-  build-and-push:
+  build-and-publish:
     needs: model-training # Ce job dépend du job model-training
     runs-on: ubuntu-latest #Utiliser une machine virtuelle Ubuntu différente de celle des jobs précédents
     # -------------------------------- Étape spécifique au job --------------------------------
