@@ -116,6 +116,8 @@ jobs:
     needs: model-training # Ce job dépend du job model-training
     runs-on: ubuntu-latest #Utiliser une machine virtuelle Ubuntu différente de celle des jobs précédents
     steps:
+    - name: Checkout code
+    uses: actions/checkout@v5 
     # -------------------------------- Étape spécifique au job --------------------------------
     # Nous devons télécharger les artefacts générés par le job précédent
     - name: Download trained model
@@ -141,8 +143,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: "."
-        file: ././Dockerfile
+        context: .
+        file: ./Dockerfile
         push: true
         tags: ${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
     # -------------------------------- Fin des étapes spécifiques au build et push des images Docker --------------------------------
