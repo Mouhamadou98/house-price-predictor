@@ -144,7 +144,7 @@ jobs:
         push: true
         tags: ${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
         context: "." # Contexte de construction (répertoire racine du projet)
-        file: "Dockerfile" # Fichier Dockerfile à utiliser pour la construction
+        file: "././Dockerfile" # Fichier Dockerfile à utiliser pour la construction
     # -------------------------------- Fin des étapes spécifiques au build et push des images Docker --------------------------------
 
     # -------------------------------- Étape de nettoyage --------------------------------
