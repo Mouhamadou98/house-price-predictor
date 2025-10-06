@@ -146,14 +146,14 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/house-price-backend:V1
     - name: Build and push Docker image streamlit
       uses: docker/build-push-action@v5
       with:
         context: ./streamlit_app 
         file: ./streamlit_app/Dockerfile
         push: true
-        tags: ${{ vars.DOCKERHUB_USERNAME }}/house-price-streamlit:latest
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/house-price-frontend:V1
     # -------------------------------- Fin des étapes spécifiques au build et push des images Docker --------------------------------
 
     # -------------------------------- Étape de nettoyage --------------------------------
