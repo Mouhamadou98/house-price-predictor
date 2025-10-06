@@ -4,14 +4,14 @@ metadata:
   name: house-price-api-monitor
   labels:
     release: prom # Match the label of your Prometheus instance as per helm release
-  spec:
-    selector:
-      matchLabels:
-        app: model
-    namespaceSelector:
-      matchNames:
-        - default # or your namespace
-    endpoints:
-      - port: "8000" # or match name of your service port
-        path: /metrics
-        interval: 15s
+spec:
+  selector:
+    matchLabels:
+      app: model # Match the label of your service
+  namespaceSelector:
+    matchNames:
+      - default # or your namespace
+  endpoints:
+    - port: model # or match name of your service port
+      path: /metrics
+      interval: 15s
