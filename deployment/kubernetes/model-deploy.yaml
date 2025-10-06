@@ -16,8 +16,8 @@ spec:
         app: model
     spec:
       containers:
-      - image: mouhamadou98/fastapi:latest
-        name: fastapi
+      - image: mouhamadou98/house-price-model:latest
+        name: house-price-model
         ports:
         - containerPort: 8000
         resources: {}
