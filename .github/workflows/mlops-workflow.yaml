@@ -147,7 +147,7 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ vars.DOCKERHUB_USERNAME }}/house-pricemodel:latest
-     - name: Build and push Docker image streamlit
+    - name: Build and push Docker image streamlit
       uses: docker/build-push-action@v5
       with:
         context: ./streamlit_app 
