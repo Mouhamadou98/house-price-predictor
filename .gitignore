@@ -39,5 +39,3 @@ dist/
 
 # Ignore all .pkl files (models, preprocessors, etc.)
 *.pkl
-
-.github/workflows/mlops-ci-workflow.yaml
