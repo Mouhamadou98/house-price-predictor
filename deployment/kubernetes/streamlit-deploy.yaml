@@ -16,8 +16,8 @@ spec:
         app: streamlit
     spec:
       containers:
-      - image: mouhamadou98/streamlit:latest
-        name: streamlit
+      - image: mouhamadou98/house-price-frontend:V1
+        name: house-price-frontend
         ports:
         - containerPort: 8501
         resources: {}

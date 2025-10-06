@@ -16,8 +16,8 @@ spec:
         app: model
     spec:
       containers:
-      - image: mouhamadou98/house-price-model:latest
-        name: house-price-model
+      - image: mouhamadou98/house-price-backend:V1
+        name: house-price-backend
         ports:
         - containerPort: 8000
         resources: {}
