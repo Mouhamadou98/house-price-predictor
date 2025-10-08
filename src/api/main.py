@@ -36,16 +36,13 @@ app.add_middleware(
 )
 
 # Initialize and Instrument the app for Prometheus metrics
-Instrumentator().instrument(app).expose(
-    app,
-    endpoint="/metrics",          # explicite
-    include_in_schema=False
-)
+Instrumentator().instrument(app).expose(app)
 
 # Start Prometheus metrics server on port 9100 in a background thread
 def start_metrics_server():
     start_http_server(9100)
 
+threading.Thread(target=start_metrics_server, daemon=True).start()
 # Health check endpoint
 @app.get("/health", response_model=dict)
 async def health_check():

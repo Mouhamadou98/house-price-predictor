@@ -10,9 +10,10 @@ spec:
     matchLabels:
       app: model
   namespaceSelector:
-    matchNames: ["default"]
+    matchNames: 
+      - default
   endpoints:
-    - port: "8000"      # <= au lieu de "http"
-      path: /metrics
+    - port: metrics     # <= au lieu de "http"
+      path: /
       interval: 15s
-      scheme: http
+      scrapeTimeout: 10s
