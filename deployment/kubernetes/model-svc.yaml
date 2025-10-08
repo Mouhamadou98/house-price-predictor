@@ -11,9 +11,6 @@ spec:
     port: 8000
     protocol: TCP
     targetPort: 8000
-  - name: metrics
-    port: 9010 # le port d'exposition des metrics dans le container
-    targetPort: 9010 # etre sur que le container expose ce port pour les metrics et la différence entre le targetPort et le port est que le port est le port interne du service et le targetPort est le port du container
   selector:
     app: model
   type: NodePort

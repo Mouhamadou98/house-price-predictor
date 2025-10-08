@@ -12,8 +12,7 @@ spec:
   namespaceSelector:
     matchNames: ["default"]
   endpoints:
-    - port: metrics # This should match the name of the port in your Service definition
-      path: /
+    - port: "8000"      # <= au lieu de "http"
+      path: /metrics
       interval: 15s
-      scrapeTimeout: 10s
       scheme: http
