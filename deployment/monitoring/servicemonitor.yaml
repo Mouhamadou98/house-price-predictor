@@ -10,10 +10,10 @@ spec:
     matchLabels:
       app: model
   namespaceSelector:
-    matchNames: 
-      - default
+    matchNames: ["default"]
   endpoints:
-    - port: metrics     # <= au lieu de "http"
+    - port: metrics # This should match the name of the port in your Service definition
       path: /
       interval: 15s
       scrapeTimeout: 10s
+      scheme: http

@@ -19,7 +19,7 @@ spec:
       - image: mouhamadou98/house-price-backend:latest
         name: house-price-backend
         ports:
-        - containerPort: 8000
+        - containerPort: 8000 # Port for the FastAPI application
         resources:
           requests:
             cpu: "50m"
